@@ -4,14 +4,14 @@
 # K. Louden 2/3/98
 #
 
-CC = bcc
+CC = gcc
 
 CFLAGS = 
 
-OBJS = main.obj util.obj scan.obj parse.obj symtab.obj analyze.obj code.obj cgen.obj
+OBJS = main.o util.o scan.o parse.o symtab.o analyze.o code.o cgen.o
 
 tiny.exe: $(OBJS)
-	$(CC) $(CFLAGS) -etiny $(OBJS)
+	$(CC) -o tiny.exe $(CFLAGS) -etiny $(OBJS)
 
 main.obj: main.c globals.h util.h scan.h parse.h analyze.h cgen.h
 	$(CC) $(CFLAGS) -c main.c
@@ -38,20 +38,20 @@ cgen.obj: cgen.c globals.h symtab.h code.h cgen.h
 	$(CC) $(CFLAGS) -c cgen.c
 
 clean:
-	-del tiny.exe
-	-del tm.exe
-	-del main.obj
-	-del util.obj
-	-del scan.obj
-	-del parse.obj
-	-del symtab.obj
-	-del analyze.obj
-	-del code.obj
-	-del cgen.obj
-	-del tm.obj
+	rm -f tiny.exe
+	rm -f tm.exe
+	rm -f main.o
+	rm -f util.o
+	rm -f scan.o
+	rm -f parse.o
+	rm -f symtab.o
+	rm -f analyze.o
+	rm -f code.o
+	rm -f cgen.o
+	rm -f tm.o
 
 tm.exe: tm.c
-	$(CC) $(CFLAGS) -etm tm.c
+	$(CC) -o tm.exe $(CFLAGS) -etm tm.c
 
 tiny: tiny.exe
 
