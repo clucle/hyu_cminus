@@ -10,7 +10,7 @@ CC = gcc
 CFLAGS = -fno-builtin
 
 OBJS = main.o util.o scan.o parse.o symtab.o analyze.o code.o cgen.o
-OBJS_FLEX = main.o util.o lex.yy.o 
+OBJS_FLEX = main.o util.o lex.yy.o
 
 cminus: $(OBJS)
 	$(CC) -o $@ $(CFLAGS) $(OBJS)
@@ -50,6 +50,9 @@ clean:
 	rm -f code.o
 	rm -f cgen.o
 	rm -f tm.o
+	rm -f lex.yy.o
+	rm -f lex.yy.c
+	rm -f cminus_flex
 
 all: cminus
 #by flex
