@@ -89,7 +89,16 @@ TokenType getToken(void)
    { int c = getNextChar();
      save = TRUE;
      switch (state)
-     { case START:
+     {
+       case INOVER:
+         if (c == '*')
+         {
+           tokenStringIndex--;
+           save = FALSE;
+           state = INCOMMENT;
+           break;
+         }
+       case START:
          if (isdigit(c))
            state = INNUM;
          else if (isalpha(c))
@@ -98,10 +107,6 @@ TokenType getToken(void)
          //  state = INASSIGN;
          else if ((c == ' ') || (c == '\t') || (c == '\n'))
            save = FALSE;
-         else if (c == '{')
-         { save = FALSE;
-           state = INCOMMENT;
-         }
          else
          { state = DONE;
            switch (c)
@@ -123,6 +128,10 @@ TokenType getToken(void)
                break;
              case '*':
                currentToken = TIMES;
+               break;
+             case '/':
+               state = INOVER;
+               currentToken = OVER;
                break;
              case '(':
                currentToken = LPAREN;
@@ -154,10 +163,22 @@ TokenType getToken(void)
        case INCOMMENT:
          save = FALSE;
          if (c == EOF)
-         { state = DONE;
+         { state = ERROR;
            currentToken = ENDFILE;
          }
-         else if (c == '}') state = START;
+         else if (c == '*') state = INCOMMENT_;
+         break;
+       case INCOMMENT_:
+         save = FALSE;
+         if (c == EOF)
+         { state = ERROR;
+           currentToken = ENDFILE;
+         }
+         else if (c == '/')
+         {
+           state = START;
+         }
+         else state = INCOMMENT;
          break;
        /*
        case INASSIGN:
