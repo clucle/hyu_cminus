@@ -97,14 +97,58 @@ TokenType getToken(void)
            save = FALSE;
            state = INCOMMENT;
            break;
+         } else {
+           tokenStringIndex = 0;
+           fprintf(listing,"\t%d: ",lineno);
+           printToken(currentToken,tokenString);
+         }
+       case INEQ:
+         if (state == INEQ)
+         {
+           if (c == '=')
+           {
+             state = DONE;
+             currentToken = EQ;
+             break;
+           } else {
+             tokenStringIndex = 0;
+             fprintf(listing,"\t%d: ",lineno);
+             printToken(currentToken,tokenString);
+           }
+         }
+       case INLT:
+         if (state == INLT)
+         {
+           if (c == '=')
+           {
+             state = DONE;
+             currentToken = LE;
+             break;
+           } else {
+             tokenStringIndex = 0;
+             fprintf(listing,"\t%d: ",lineno);
+             printToken(currentToken,tokenString);
+           }
+         }
+       case INGT:
+         if (state == INGT)
+         {
+           if (c == '=')
+           {
+             state = DONE;
+             currentToken = GE;
+             break;
+           } else {
+             tokenStringIndex = 0;
+             fprintf(listing,"\t%d: ",lineno);
+             printToken(currentToken,tokenString);
+           }
          }
        case START:
          if (isdigit(c))
            state = INNUM;
          else if (isalpha(c))
            state = INID;
-         //else if (c == ':')
-         //  state = INASSIGN;
          else if ((c == ' ') || (c == '\t') || (c == '\n'))
            save = FALSE;
          else
@@ -115,10 +159,16 @@ TokenType getToken(void)
                currentToken = ENDFILE;
                break;
              case '=':
-               currentToken = EQ;
+               state = INEQ;
+               currentToken = ASSIGN;
                break;
              case '<':
+               state = INLT;
                currentToken = LT;
+               break;
+             case '>':
+               state = INGT;
+               currentToken = GT;
                break;
              case '+':
                currentToken = PLUS;
