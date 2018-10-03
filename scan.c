@@ -98,6 +98,7 @@ TokenType getToken(void)
            state = INCOMMENT;
            break;
          } else {
+           state = START;
            tokenStringIndex = 0;
            fprintf(listing,"\t%d: ",lineno);
            printToken(currentToken,tokenString);
@@ -111,6 +112,7 @@ TokenType getToken(void)
              currentToken = EQ;
              break;
            } else {
+             state = START;
              tokenStringIndex = 0;
              fprintf(listing,"\t%d: ",lineno);
              printToken(currentToken,tokenString);
@@ -125,6 +127,7 @@ TokenType getToken(void)
              currentToken = LE;
              break;
            } else {
+             state = START;
              tokenStringIndex = 0;
              fprintf(listing,"\t%d: ",lineno);
              printToken(currentToken,tokenString);
@@ -139,6 +142,7 @@ TokenType getToken(void)
              currentToken = GE;
              break;
            } else {
+             state = START;
              tokenStringIndex = 0;
              fprintf(listing,"\t%d: ",lineno);
              printToken(currentToken,tokenString);
