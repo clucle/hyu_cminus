@@ -148,6 +148,21 @@ TokenType getToken(void)
              printToken(currentToken,tokenString);
            }
          }
+       case INNE:
+         if (state == INNE)
+         {
+           if (c == '=')
+           {
+             state = DONE;
+             currentToken = NE;
+             break;
+           } else {
+             state = START;
+             tokenStringIndex = 0;
+             fprintf(listing,"\t%d: ",lineno);
+             printToken(currentToken,tokenString);
+           }
+         }
        case START:
          if (isdigit(c))
            state = INNUM;
@@ -161,6 +176,10 @@ TokenType getToken(void)
            { case EOF:
                save = FALSE;
                currentToken = ENDFILE;
+               break;
+             case '!':
+               state = INNE;
+               currentToken = ERROR;
                break;
              case '=':
                state = INEQ;
