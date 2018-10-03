@@ -154,6 +154,9 @@ TokenType getToken(void)
              case ';':
                currentToken = SEMI;
                break;
+             case ',':
+               currentToken = COMMA;
+               break;
              default:
                currentToken = ERROR;
                break;
