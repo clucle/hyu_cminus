@@ -54,7 +54,7 @@ clean:
 	rm -f lex.yy.c
 	rm -f cminus_flex
 
-all: cminus
+all: cminus cminus_flex
 #by flex
 cminus_flex: $(OBJS_FLEX)
 	$(CC) $(CFLAGS) main.o util.o lex.yy.o -o cminus_flex -lfl
