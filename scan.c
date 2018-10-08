@@ -96,73 +96,61 @@ TokenType getToken(void)
            tokenStringIndex--;
            save = FALSE;
            state = INCOMMENT;
-           break;
          } else {
-           state = START;
-           tokenStringIndex = 0;
-           fprintf(listing,"\t%d: ",lineno);
-           printToken(currentToken,tokenString);
+           ungetNextChar();
+           save = FALSE;
+           state = DONE;
+           currentToken = OVER;
          }
+         break;
        case INEQ:
-         if (state == INEQ)
+         if (c == '=')
          {
-           if (c == '=')
-           {
-             state = DONE;
-             currentToken = EQ;
-             break;
-           } else {
-             state = START;
-             tokenStringIndex = 0;
-             fprintf(listing,"\t%d: ",lineno);
-             printToken(currentToken,tokenString);
-           }
+           state = DONE;
+           currentToken = EQ;
+         } else {
+           ungetNextChar();
+           save = FALSE;
+           state = DONE;
+           currentToken = ASSIGN;
          }
+         break;
        case INLT:
-         if (state == INLT)
+         if (c == '=')
          {
-           if (c == '=')
-           {
-             state = DONE;
-             currentToken = LE;
-             break;
-           } else {
-             state = START;
-             tokenStringIndex = 0;
-             fprintf(listing,"\t%d: ",lineno);
-             printToken(currentToken,tokenString);
-           }
+           state = DONE;
+           currentToken = LE;
+         } else {
+           ungetNextChar();
+           save = FALSE;
+           state = DONE;
+           currentToken = LT;
          }
+         break;
        case INGT:
-         if (state == INGT)
+         if (c == '=')
          {
-           if (c == '=')
-           {
-             state = DONE;
-             currentToken = GE;
-             break;
-           } else {
-             state = START;
-             tokenStringIndex = 0;
-             fprintf(listing,"\t%d: ",lineno);
-             printToken(currentToken,tokenString);
-           }
+           state = DONE;
+           currentToken = GE;
+         } else {
+           ungetNextChar();
+           save = FALSE;
+           state = DONE;
+           currentToken = GT;
          }
+         break;
        case INNE:
-         if (state == INNE)
+         if (c == '=')
          {
-           if (c == '=')
-           {
-             state = DONE;
-             currentToken = NE;
-             break;
-           } else {
-             state = START;
-             tokenStringIndex = 0;
-             fprintf(listing,"\t%d: ",lineno);
-             printToken(currentToken,tokenString);
-           }
+           state = DONE;
+           currentToken = NE;
+         } else {
+           ungetNextChar();
+           save = FALSE;
+           state = DONE;
+           currentToken = GT;
          }
+         break;
        case START:
          if (isdigit(c))
            state = INNUM;
@@ -183,7 +171,6 @@ TokenType getToken(void)
                break;
              case '=':
                state = INEQ;
-               currentToken = ASSIGN;
                break;
              case '<':
                state = INLT;
@@ -204,7 +191,6 @@ TokenType getToken(void)
                break;
              case '/':
                state = INOVER;
-               currentToken = OVER;
                break;
              case '(':
                currentToken = LPAREN;
@@ -256,19 +242,6 @@ TokenType getToken(void)
          }
          else state = INCOMMENT;
          break;
-       /*
-       case INASSIGN:
-         state = DONE;
-         if (c == '=')
-           currentToken = ASSIGN;
-         else
-         {  backup in the input 
-           ungetNextChar();
-           save = FALSE;
-           currentToken = ERROR;
-         }
-         break;
-       */
        case INNUM:
          if (!isdigit(c))
          { /* backup in the input */
