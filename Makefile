@@ -14,7 +14,7 @@ OBJS = y.tab.o lex.yy.o main.o util.o symtab.o analyze.o code.o cgen.o
 cminus: $(OBJS)
 	$(CC) -o $@ $(CFLAGS) $(OBJS)
 
-main.o: main.c globals.h util.h scan.h parse.h analyze.h cgen.h
+main.o: main.c globals.h util.h scan.h analyze.h cgen.h
 	$(CC) $(CFLAGS) -c main.c
 
 util.o: util.c util.h globals.h
@@ -53,7 +53,7 @@ clean:
 all: cminus_flex
 #by flex
 cminus_flex: $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) y.tab.c -o cminus_flex -lfl
+	$(CC) $(CFLAGS) $(OBJS) -o cminus_flex -lfl
 
 lex.yy.o: cminus.l scan.h util.h globals.h
 	flex cminus.l

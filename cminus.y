@@ -10,57 +10,57 @@
 #include "globals.h"
 #include "util.h"
 #include "scan.h"
-#include "parse.h"
 
 #define YYSTYPE TreeNode *
 static char * savedName; /* for use in assignments */
 static int savedLineNo;  /* ditto */
 static TreeNode * savedTree; /* stores syntax tree for later return */
 static int yylex(void);
+int yyerror (char *);
 
 %}
 
 %token IF ELSE WHILE RETURN INT VOID
 %token ID NUM
 %token ASSIGN EQ NE LT LE GT GE PLUS MINUS TIMES OVER LPAREN RPAREN LBRACE RBRACE LCURLY RCURLY SEMI COMMA
-%token ERROR ENDFILE 
+%token ERROR 
 
 %% /* Grammar for TINY */
 
 /* Appendix A.2 */
-/* 1. program -> declaration-list */
+/* 1. program -> declaration_list */
 program : 
-declaration-list { savedTree = $1;};
+declaration_list { savedTree = $1;};
 
-/* 2. declaration-list -> declaration-list declaration | declaration */
-declaration-list : 
-declaration-list declaration {
+/* 2. declaration_list -> declaration_list declaration | declaration */
+declaration_list : 
+declaration_list declaration {
 
 }
 | declaration {
 
 };
 
-/* 3. declaration -> var-declaration | fun-declaration */
+/* 3. declaration -> var_declaration | fun_declaration */
 declaration :
-var-declaration {
+var_declaration {
 
 }
-| fun-declaration {
+| fun_declaration {
 
 };
 
-/* 4. var-declaration -> type-specifier ID ; | type-specifier ID [NUM] ; */
-var-declaration :
-type-specifier ID SEMI {
+/* 4. var_declaration -> type_specifier ID ; | type_specifier ID [NUM] ; */
+var_declaration :
+type_specifier ID SEMI {
 
 }
-| type-specifier ID LBRACE NUM RBRACE SEMI {
+| type_specifier ID LBRACE NUM RBRACE SEMI {
 
 };
 
-/* 5. type-specifier -> int | void */
-type-specifier :
+/* 5. type_specifier -> int | void */
+type_specifier :
 INT {
 
 }
@@ -68,83 +68,83 @@ INT {
 
 };
 
-/* 6. fun-declaration -> type-specifier ID ( params ) compound-stmt */
-fun-declaration :
-type-specifier ID LPAREN params RPAREN compound-stmt {
+/* 6. fun_declaration -> type_specifier ID ( params ) compound_stmt */
+fun_declaration :
+type_specifier ID LPAREN params RPAREN compound_stmt {
 
 };
 
-/* 7. params -> param-list | void */
+/* 7. params -> param_list | void */
 params :
-param-list {
+param_list {
 
 }
 | VOID {
 
 };
 
-/* 8. param-list -> param-list, param | param */
-param-list :
-param-list COMMA param {
+/* 8. param_list -> param_list, param | param */
+param_list :
+param_list COMMA param {
 
 }
 | param {
 
 };
 
-/* 9. param -> type-specifier ID | type-specifier ID [ ] */
+/* 9. param -> type_specifier ID | type_specifier ID [ ] */
 param :
-type-specifier ID {
+type_specifier ID {
 
 }
-| type-specifier ID LBRACE RBRACE {
+| type_specifier ID LBRACE RBRACE {
 
 };
 
-/* 10. compound-stmt -> { local-declarations statement-list } */
-compound-stmt :
-LCURLY local-declarations statement-list RCURLY {
+/* 10. compound_stmt -> { local_declarations statement_list } */
+compound_stmt :
+LCURLY local_declarations statement_list RCURLY {
 
 };
 
-/* 11. local-declarations -> local-declarations var-declarations | empty*/
-local-declarations :
-local-declarations var-declarations {
-
-}
-| {
-
-};
-
-/* 12. statement-list -> statement-list statement | empty */
-statement-list :
-statement-list statement {
+/* 11. local_declarations -> local_declarations var_declaration | empty*/
+local_declarations :
+local_declarations var_declaration {
 
 }
 | {
 
 };
 
-/* 13. statement -> expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt */
+/* 12. statement_list -> statement_list statement | empty */
+statement_list :
+statement_list statement {
+
+}
+| {
+
+};
+
+/* 13. statement -> expression_stmt | compound_stmt | selection_stmt | iteration_stmt | return_stmt */
 statement :
-expression-stmt {
+expression_stmt {
 
 }
-| compound-stmt {
+| compound_stmt {
 
 }
-| selection-stmt {
+| selection_stmt {
 
 }
-| iteration-stmt {
+| iteration_stmt {
 
 }
-| return-stmt {
+| return_stmt {
 
 };
 
-/* 14. expression-stmt -> expression ; | ; */
-expression-stmt :
+/* 14. expression_stmt -> expression ; | ; */
+expression_stmt :
 expression SEMI {
 
 }
@@ -152,23 +152,23 @@ expression SEMI {
 
 };
 
-/* 15. selection-stmt -> if ( expression ) statment | if ( expression ) statement else statement */
-selection-stmt :
-if LPAREN expression RPAREN statement {
+/* 15. selection_stmt -> if ( expression ) statment | if ( expression ) statement else statement */
+selection_stmt :
+IF LPAREN expression RPAREN statement {
 
 }
-| if LPAREN expression RPAREN statement ELSE statement {
+| IF LPAREN expression RPAREN statement ELSE statement {
 
 };
 
-/* 16. iteration-stmt -> while ( expression ) statement */
-iteration-stmt :
+/* 16. iteration_stmt -> while ( expression ) statement */
+iteration_stmt :
 WHILE LPAREN expression RPAREN statement {
 
 };
 
-/* 17. return-stmt -> return ; | return expression ; */
-return-stmt :
+/* 17. return_stmt -> return ; | return expression ; */
+return_stmt :
 RETURN SEMI {
 
 }
@@ -176,12 +176,12 @@ RETURN SEMI {
 
 };
 
-/* 18. expression -> var = expression | simple-expression*/
+/* 18. expression -> var = expression | simple_expression*/
 expression :
-var EQ expression {
+var ASSIGN expression {
 
 }
-| simple-expression {
+| simple_expression {
 
 };
 
@@ -194,12 +194,12 @@ ID {
 
 };
 
-/* 20. simple-expression -> additive-expression relop additive-expression | additive-expression */
-simple-expression :
-additive-expression relop additive-expression {
+/* 20. simple_expression -> additive_expression relop additive_expression | additive_expression */
+simple_expression :
+additive_expression relop additive_expression {
 
 }
-| additive-expression {
+| additive_expression {
 
 };
 
@@ -224,9 +224,9 @@ LE {
 
 };
 
-/* 22. additive-expression -> additive-expression addop term | term */
-additive-expression :
-additive-expression addop term {
+/* 22. additive_expression -> additive_expression addop term | term */
+additive_expression :
+additive_expression addop term {
 
 }
 | term {
@@ -281,18 +281,18 @@ ID LPAREN args RPAREN {
 
 };
 
-/* 28. args -> arg-list | empty */
+/* 28. args -> arg_list | empty */
 args :
-arg-list {
+arg_list {
 
 }
 | {
 
 };
 
-/* 29. arg-list -> arg-list , expression | expression */
-arg-list :
-arg-list COMMA expression {
+/* 29. arg_list -> arg_list , expression | expression */
+arg_list :
+arg_list COMMA expression {
 
 }
 | expression {

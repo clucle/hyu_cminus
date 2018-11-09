@@ -20,13 +20,6 @@ void printToken( TokenType token, const char* tokenString )
     case RETURN:
     case INT:
     case VOID:
-    // Discarded
-    case THEN:
-    case END:
-    case REPEAT:
-    case UNTIL:
-    case READ:
-    case WRITE:
       fprintf(listing,
          "reserved word: %s\n",tokenString);
       break;
