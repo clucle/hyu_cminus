@@ -139,7 +139,9 @@ static void printSpaces(void)
  * listing file using indentation to indicate subtrees
  */
 void printTree( TreeNode * tree )
-{ int i;
+{
+  // TODO : c-minus syntax tree
+  int i;
   INDENT;
   while (tree != NULL) {
     printSpaces();
