@@ -16,13 +16,14 @@
 static char * savedName; /* for use in assignments */
 static int savedLineNo;  /* ditto */
 static TreeNode * savedTree; /* stores syntax tree for later return */
+static int yylex(void);
 
 %}
 
-%token IF THEN ELSE END REPEAT UNTIL READ WRITE
-%token ID NUM 
-%token ASSIGN EQ LT PLUS MINUS TIMES OVER LPAREN RPAREN SEMI
-%token ERROR 
+%token IF ELSE WHILE RETURN INT VOID
+%token ID NUM
+%token ASSIGN EQ NE LT LE GT GE PLUS MINUS TIMES OVER LPAREN RPAREN LBRACE RBRACE LCURLY RCURLY SEMI COMMA
+%token ERROR ENDFILE 
 
 %% /* Grammar for TINY */
 
