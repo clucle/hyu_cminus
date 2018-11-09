@@ -93,12 +93,10 @@ TokenType getToken(void)
        case INOVER:
          if (c == '*')
          {
-           tokenStringIndex--;
            save = FALSE;
            state = INCOMMENT;
          } else {
            ungetNextChar();
-           save = FALSE;
            state = DONE;
            currentToken = OVER;
          }
@@ -190,6 +188,7 @@ TokenType getToken(void)
                currentToken = TIMES;
                break;
              case '/':
+               save = FALSE;
                state = INOVER;
                break;
              case '(':
@@ -225,7 +224,7 @@ TokenType getToken(void)
        case INCOMMENT:
          save = FALSE;
          if (c == EOF)
-         { state = ERROR;
+         { state = DONE;
            currentToken = ENDFILE;
          }
          else if (c == '*') state = INCOMMENT_;
@@ -233,7 +232,7 @@ TokenType getToken(void)
        case INCOMMENT_:
          save = FALSE;
          if (c == EOF)
-         { state = ERROR;
+         { state = DONE;
            currentToken = ENDFILE;
          }
          else if (c == '/')
