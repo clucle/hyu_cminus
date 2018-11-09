@@ -9,6 +9,7 @@
 #include "globals.h"
 #include "util.h"
 #include "scan.h"
+#include <stdio.h>
 /* lexeme of identifier or reserved word */
 char tokenString[MAXTOKENLEN+1];
 %}
@@ -63,9 +64,10 @@ whitespace  [ \t]+
                   {
                     prev = c;
                     c = input();
-                    if (c == EOF) break;
+                    if (c == 0) break; // EOF
                     if (c == '\n') lineno++;
-                  } while (prev != '*' && c != '/');
+                    if (prev == '*' && c == '/') break;
+                  } while (1);
                 }
 .               {return ERROR;}
 
