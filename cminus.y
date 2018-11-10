@@ -13,6 +13,7 @@
 
 #define YYSTYPE TreeNode *
 static char * savedName; /* for use in assignments */
+static int savedNumber;
 static int savedLineNo;  /* ditto */
 static TreeNode * savedTree; /* stores syntax tree for later return */
 static int yylex(void);
@@ -52,10 +53,10 @@ var_declaration {
 
 /* 4. var_declaration -> type_specifier ID ; | type_specifier ID [NUM] ; */
 var_declaration :
-type_specifier ID SEMI {
+type_specifier _id SEMI {
 
 }
-| type_specifier ID LBRACE NUM RBRACE SEMI {
+| type_specifier _id LBRACE _num RBRACE SEMI {
 
 };
 
@@ -70,7 +71,7 @@ INT {
 
 /* 6. fun_declaration -> type_specifier ID ( params ) compound_stmt */
 fun_declaration :
-type_specifier ID LPAREN params RPAREN compound_stmt {
+type_specifier _id LPAREN params RPAREN compound_stmt {
 
 };
 
@@ -94,10 +95,10 @@ param_list COMMA param {
 
 /* 9. param -> type_specifier ID | type_specifier ID [ ] */
 param :
-type_specifier ID {
+type_specifier _id {
 
 }
-| type_specifier ID LBRACE RBRACE {
+| type_specifier _id LBRACE RBRACE {
 
 };
 
@@ -187,10 +188,10 @@ var ASSIGN expression {
 
 /* 19. var -> ID | ID [ expression ] */
 var :
-ID {
+_id {
 
 }
-| ID LBRACE expression RBRACE {
+| _id LBRACE expression RBRACE {
 
 };
 
@@ -271,13 +272,13 @@ LPAREN expression RPAREN {
 | call {
 
 }
-| NUM {
+| _num {
 
 };
 
 /* 27. call -> ID ( args ) */
 call :
-ID LPAREN args RPAREN {
+_id LPAREN args RPAREN {
 
 };
 
@@ -297,6 +298,19 @@ arg_list COMMA expression {
 }
 | expression {
 
+};
+
+/* save val */
+_id :
+ID {
+  savedName = copyString(tokenString);
+  savedLineNo = lineno;
+};
+
+_num :
+NUM {
+  savedNumber = atoi(tokenString);
+  savedLineNo = lineno;
 };
 
 %%
