@@ -240,11 +240,14 @@ _id {
   $$->attr.name = savedName;
   $$->lineno = lineno;
 }
-| _id LBRACE expression RBRACE {
+| _id {
   $$ = newExpNode(ArrayIdK);
   $$->attr.name = savedName;
-  $$->child[0] = $3;
   $$->lineno = lineno;
+}
+LBRACE expression RBRACE {
+  $$ = $2;
+  $$->child[0] = $4;
 };
 
 /* 20. simple_expression -> additive_expression relop additive_expression | additive_expression */
