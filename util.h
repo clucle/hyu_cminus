@@ -13,6 +13,10 @@
  */
 void printToken( TokenType, const char* );
 
+TreeNode * allocTree(void);
+
+TreeNode * dangleTree(TreeNode * parent, TreeNode * child);
+
 /* Function newStmtNode creates a new statement
  * node for syntax tree construction
  */
