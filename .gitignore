@@ -3,3 +3,5 @@
 cminus
 cminus_flex
 lex.yy.c
+y.tab.c
+y.tab.h

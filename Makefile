@@ -9,13 +9,12 @@ CC = gcc
 # fno builtin for exp function
 CFLAGS = -fno-builtin
 
-OBJS = main.o util.o scan.o parse.o symtab.o analyze.o code.o cgen.o
-OBJS_FLEX = main.o util.o lex.yy.o
+OBJS = y.tab.o lex.yy.o main.o util.o symtab.o analyze.o code.o cgen.o
 
 cminus: $(OBJS)
 	$(CC) -o $@ $(CFLAGS) $(OBJS)
 
-main.o: main.c globals.h util.h scan.h parse.h analyze.h cgen.h
+main.o: main.c globals.h util.h scan.h analyze.h cgen.h
 	$(CC) $(CFLAGS) -c main.c
 
 util.o: util.c util.h globals.h
@@ -39,25 +38,22 @@ code.o: code.c code.h globals.h
 cgen.o: cgen.c globals.h symtab.h code.h cgen.h
 	$(CC) $(CFLAGS) -c cgen.c
 
+y.tab.o: cminus.y globals.h
+	yacc -d cminus.y
+	$(CC) $(CFLAGS) -c y.tab.c
+
 clean:
 	rm -f cminus
-	rm -f main.o
-	rm -f util.o
-	rm -f scan.o
-	rm -f parse.o
-	rm -f symtab.o
-	rm -f analyze.o
-	rm -f code.o
-	rm -f cgen.o
-	rm -f tm.o
-	rm -f lex.yy.o
+	rm -f *.o
 	rm -f lex.yy.c
 	rm -f cminus_flex
+	rm -f y.tab.c
+	rm -f y.tab.h
 
-all: cminus cminus_flex
+all: cminus_flex
 #by flex
-cminus_flex: $(OBJS_FLEX)
-	$(CC) $(CFLAGS) main.o util.o lex.yy.o -o cminus_flex -lfl
+cminus_flex: $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o cminus_flex -lfl
 
 lex.yy.o: cminus.l scan.h util.h globals.h
 	flex cminus.l

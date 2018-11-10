@@ -29,12 +29,6 @@ whitespace  [ \t]+
 "return"        {return RETURN;}
 "int"           {return INT;}
 "void"          {return VOID;}
-"then"          {return THEN;}
-"end"           {return END;}
-"repeat"        {return REPEAT;}
-"until"         {return UNTIL;}
-"read"          {return READ;}
-"write"         {return WRITE;}
 "="             {return ASSIGN;}
 "=="            {return EQ;}
 "!="            {return NE;}
@@ -64,7 +58,7 @@ whitespace  [ \t]+
                   {
                     prev = c;
                     c = input();
-                    if (c == 0) break; // EOF
+                    if (c == EOF) break; // EOF or '\0'
                     if (c == '\n') lineno++;
                     if (prev == '*' && c == '/') break;
                   } while (1);

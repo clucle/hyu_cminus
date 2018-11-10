@@ -53,21 +53,19 @@ static void genStmt( TreeNode * tree)
          emitRestore() ;
          if (TraceCode)  emitComment("<- if") ;
          break; /* if_k */
-
+      /*
       case RepeatK:
          if (TraceCode) emitComment("-> repeat") ;
          p1 = tree->child[0] ;
          p2 = tree->child[1] ;
          savedLoc1 = emitSkip(0);
          emitComment("repeat: jump after body comes back here");
-         /* generate code for body */
          cGen(p1);
-         /* generate code for test */
          cGen(p2);
          emitRM_Abs("JEQ",ac,savedLoc1,"repeat: jmp back to body");
          if (TraceCode)  emitComment("<- repeat") ;
-         break; /* repeat */
-
+         break; 
+      */
       case AssignK:
          if (TraceCode) emitComment("-> assign") ;
          /* generate code for rhs */
@@ -77,18 +75,17 @@ static void genStmt( TreeNode * tree)
          emitRM("ST",ac,loc,gp,"assign: store value");
          if (TraceCode)  emitComment("<- assign") ;
          break; /* assign_k */
-
+      /*
       case ReadK:
          emitRO("IN",ac,0,0,"read integer value");
          loc = st_lookup(tree->attr.name);
          emitRM("ST",ac,loc,gp,"read: store value");
          break;
       case WriteK:
-         /* generate code for expression to write */
          cGen(tree->child[0]);
-         /* now output it */
          emitRO("OUT",ac,0,0,"write ac");
          break;
+      */
       default:
          break;
     }
@@ -99,14 +96,13 @@ static void genExp( TreeNode * tree)
 { int loc;
   TreeNode * p1, * p2;
   switch (tree->kind.exp) {
-
+    /*
     case ConstK :
       if (TraceCode) emitComment("-> Const") ;
-      /* gen code to load integer constant using LDC */
       emitRM("LDC",ac,tree->attr.val,0,"load const");
       if (TraceCode)  emitComment("<- Const") ;
-      break; /* ConstK */
-    
+      break;
+    */
     case IdK :
       if (TraceCode) emitComment("-> Id") ;
       loc = st_lookup(tree->attr.name);
