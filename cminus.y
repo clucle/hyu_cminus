@@ -129,7 +129,9 @@ type_specifier _id {
 /* 10. compound_stmt -> { local_declarations statement_list } */
 compound_stmt :
 LCURLY local_declarations statement_list RCURLY {
-  $$ = dangleTree($2, $3);
+  $$ = newStmtNode(CompoundK);
+  $$->child[0] = $2;
+  $$->child[1] = $3;
 };
 
 /* 11. local_declarations -> local_declarations var_declaration | empty*/
@@ -355,7 +357,9 @@ LPAREN expression RPAREN {
   $$ = $1;
 }
 | _num {
-  $$ = $1;
+  $$ = newExpNode(ConstK);
+  $$->attr.val = savedNumber;
+  $$->type = Integer;
 };
 
 /* 27. call -> ID ( args ) */
