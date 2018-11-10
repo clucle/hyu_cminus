@@ -217,7 +217,7 @@ void printTree( TreeNode * tree )
     { switch (tree->kind.stmt) {
         // 6
         case FunctionK:
-          fprintf(listing,"function declaration, name : return type : ");
+          fprintf(listing,"function declaration, name : %s return type : ", tree->attr.name);
           printTreeToken(tree->child[0]);
           printTree(tree->child[1]);
           printTree(tree->child[2]);

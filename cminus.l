@@ -58,7 +58,7 @@ whitespace  [ \t]+
                   {
                     prev = c;
                     c = input();
-                    if (c == 0) break; // EOF
+                    if (c == EOF) break; // EOF or '\0'
                     if (c == '\n') lineno++;
                     if (prev == '*' && c == '/') break;
                   } while (1);

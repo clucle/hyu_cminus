@@ -82,13 +82,16 @@ INT {
 
 /* 6. fun_declaration -> type_specifier ID ( params ) compound_stmt */
 fun_declaration :
-type_specifier _id LPAREN params RPAREN compound_stmt {
+type_specifier _id {
   $$ = newStmtNode(FunctionK);
   $$->attr.name = savedName;
-  $$->child[0] = $1;
-  $$->child[1] = $4;
-  $$->child[2] = $6;
   $$->lineno = lineno;
+} 
+LPAREN params RPAREN compound_stmt {
+  $$ = $3;
+  $$->child[0] = $1;
+  $$->child[1] = $5;
+  $$->child[2] = $7;
 };
 
 /* 7. params -> param_list | void */
