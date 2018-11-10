@@ -165,9 +165,23 @@ void printTree( TreeNode * tree )
     printSpaces();
     if (tree->nodekind==StmtK)
     { switch (tree->kind.stmt) {
+        // 6
+        case FunctionK:
+          fprintf(listing,"Function\n");
+          break;
+        // 15
         case IfK:
           fprintf(listing,"If\n");
           break;
+        // 16
+        case WhileK:
+          fprintf(listing,"\n");
+          break;
+        // 17
+        case ReturnK:
+          fprintf(listing,"\n");
+          break;
+
         default:
           fprintf(listing,"Unknown ExpNode kind\n");
           break;
@@ -175,13 +189,40 @@ void printTree( TreeNode * tree )
     }
     else if (tree->nodekind==ExpK)
     { switch (tree->kind.exp) {
-        case OpK:
-          fprintf(listing,"Op: ");
-          printToken(tree->attr.op,"\0");
+        // 4
+        case VarK:
+          fprintf(listing,": ");
           break;
+        case VarArrayK:
+          fprintf(listing,": ");
+          break;
+        // 9
+        case SingleParamK:
+          fprintf(listing,": ");
+          break;
+        case ArrayParamK:
+          fprintf(listing,": ");
+          break;
+        // 18
+        case AssignK:
+          fprintf(listing,": ");
+          break;
+        // 19
         case IdK:
-          fprintf(listing,"Id: %s\n",tree->attr.name);
+          fprintf(listing,": ");
           break;
+        case ArrayIdK:
+          fprintf(listing,": ");
+          break;
+        // 20
+        case OpK:
+          fprintf(listing,": ");
+          break;
+        // 27
+        case CallK:
+          fprintf(listing,": ");
+          break;
+
         default:
           fprintf(listing,"Unknown ExpNode kind\n");
           break;

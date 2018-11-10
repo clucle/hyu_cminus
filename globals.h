@@ -66,11 +66,12 @@ extern int lineno; /* source line number for listing */
 // EXP  -> elipse
 typedef enum {StmtK, ExpK, TokenTypeK} NodeKind;
 typedef enum 
-{VarK, VarArrayK, NUMK, SingleParamK, 
-ArrayParamK, AssignK, ArrayIdK, IdK, OpK, ConstK, CallK} ExpKind;
+{VarK, VarArrayK, SingleParamK, ArrayParamK, AssignK, ArrayIdK, IdK, OpK, CallK} ExpKind;
+// NUMK, ConstK
 typedef enum 
-{FunctionK, ParamsK, CompoundK, LocalDeclarationsK, 
-StatementListK, WhileK, IfK, ReturnK, ArgsK} StmtKind;
+{FunctionK, WhileK, IfK, ReturnK} StmtKind;
+// ParamsK, CompoundK, LocalDeclarationsK, StatementListK, ArgsK
+
 typedef enum
 {TypeK} TypeKind;
 

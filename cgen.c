@@ -96,14 +96,13 @@ static void genExp( TreeNode * tree)
 { int loc;
   TreeNode * p1, * p2;
   switch (tree->kind.exp) {
-
+    /*
     case ConstK :
       if (TraceCode) emitComment("-> Const") ;
-      /* gen code to load integer constant using LDC */
       emitRM("LDC",ac,tree->attr.val,0,"load const");
       if (TraceCode)  emitComment("<- Const") ;
-      break; /* ConstK */
-    
+      break;
+    */
     case IdK :
       if (TraceCode) emitComment("-> Id") ;
       loc = st_lookup(tree->attr.name);

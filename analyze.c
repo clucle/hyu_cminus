@@ -114,7 +114,7 @@ static void checkNode(TreeNode * t)
           else
             t->type = Integer;
           break;
-        case ConstK:
+        // case ConstK:
         case IdK:
           t->type = Integer;
           break;
