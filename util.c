@@ -112,6 +112,16 @@ TreeNode * newExpNode(ExpKind kind)
   return t;
 }
 
+TreeNode * newTypeNode(TypeKind kind)
+{ 
+  TreeNode * t = allocTree();
+  if (t != NULL) {
+    t->nodekind = TypeK;
+    t->kind.exp = kind;
+  }
+  return t;
+}
+
 /* Function copyString allocates and makes a new
  * copy of an existing string
  */
