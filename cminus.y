@@ -367,11 +367,14 @@ LPAREN expression RPAREN {
 
 /* 27. call -> ID ( args ) */
 call :
-_id LPAREN args RPAREN {
+_id {
   $$ = newExpNode(CallK);
   $$->attr.name = savedName;
-  $$->child[0] = $3;
   $$->lineno = lineno;
+}
+LPAREN args RPAREN {
+  $$ = $2;
+  $$->child[0] = $4;
 };
 
 /* 28. args -> arg_list | empty */
