@@ -10,12 +10,12 @@
 #define _CODE_H_
 
 /* pc = program counter  */
-#define  pc 7
+#define pc 7
 
 /* mp = "memory pointer" points
  * to top of memory (for temp storage)
  */
-#define  mp 6
+#define mp 6
 
 /* gp = "global pointer" points
  * to bottom of memory for (global)
@@ -24,17 +24,17 @@
 #define gp 5
 
 /* accumulator */
-#define  ac 0
+#define ac 0
 
 /* 2nd accumulator */
-#define  ac1 1
+#define ac1 1
 
 /* code emitting utilities */
 
 /* Procedure emitComment prints a comment line 
  * with comment c in the code file
  */
-void emitComment( char * c );
+void emitComment(char *c);
 
 /* Procedure emitRO emits a register-only
  * TM instruction
@@ -44,7 +44,7 @@ void emitComment( char * c );
  * t = 2nd source register
  * c = a comment to be printed if TraceCode is TRUE
  */
-void emitRO( char *op, int r, int s, int t, char *c);
+void emitRO(char *op, int r, int s, int t, char *c);
 
 /* Procedure emitRM emits a register-to-memory
  * TM instruction
@@ -54,18 +54,18 @@ void emitRO( char *op, int r, int s, int t, char *c);
  * s = the base register
  * c = a comment to be printed if TraceCode is TRUE
  */
-void emitRM( char * op, int r, int d, int s, char *c);
+void emitRM(char *op, int r, int d, int s, char *c);
 
 /* Function emitSkip skips "howMany" code
  * locations for later backpatch. It also
  * returns the current code position
  */
-int emitSkip( int howMany);
+int emitSkip(int howMany);
 
 /* Procedure emitBackup backs up to 
  * loc = a previously skipped location
  */
-void emitBackup( int loc);
+void emitBackup(int loc);
 
 /* Procedure emitRestore restores the current 
  * code position to the highest previously
@@ -81,6 +81,6 @@ void emitRestore(void);
  * a = the absolute location in memory
  * c = a comment to be printed if TraceCode is TRUE
  */
-void emitRM_Abs( char *op, int r, int a, char * c);
+void emitRM_Abs(char *op, int r, int a, char *c);
 
 #endif
