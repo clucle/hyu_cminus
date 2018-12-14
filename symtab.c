@@ -74,6 +74,7 @@ void sc_push(ScopeList sc) {
  */
 void st_insert(char *scope, char *name, ExpType type, TreeNode *t)
 {
+    int lineno = t->lineno;
     int h = hash(name);
     ScopeList sc = sc_top();
 
@@ -92,7 +93,7 @@ void st_insert(char *scope, char *name, ExpType type, TreeNode *t)
         l = (BucketList)malloc(sizeof(struct BucketListRec));
         l->name = name;
         l->lines = (LineList)malloc(sizeof(struct LineListRec));
-        l->lines->lineno = t->lineno;
+        l->lines->lineno = lineno;
         l->memloc = sc->loc++;
         l->lines->next = NULL;
         l->next = sc->bucket[h];

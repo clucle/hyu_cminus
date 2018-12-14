@@ -74,9 +74,10 @@ static void insertNode(TreeNode *t)
             }
             st_insert(scopeName, t->attr.name, t->type, t);
             scopeName = t->attr.name;
+            sc_push(sc_create(scopeName));
             break;
         case CompoundK:
-            sc_push(sc_create(scopeName));
+            fprintf(listing, "{} block 열릴때\n");
             break;
         case AssignK:
 
@@ -88,23 +89,25 @@ static void insertNode(TreeNode *t)
     case ExpK:
         switch (t->kind.exp)
         {
+        case VarArrayK:
+        case SingleParamK:
+        case ArrayParamK:
         case VarK:
-            scopeName = sc_top()->name;
             if (st_lookup_excluding_parent(scopeName, t->attr.name)) {
                 // scope 에 같은 변수 존재 에러
                 // TODO : 에러처리
             }
             st_insert(scopeName, t->attr.name, t->type, t);
             break;
+
+        case ArrayIdK:
         case IdK:
-            /*
-            if (st_lookup(NULL, t->attr.name) == -1)
-                // not yet in table, so treat as new definition 
-                st_insert(NULL, t->attr.name, t->type, t->lineno, location++);
-            else
-                //already in table, so ignore location, add line number of use only 
-                st_insert(NULL, t->attr.name, t->type, t->lineno, 0);
-            */
+        case CallK:
+            if (st_lookup_excluding_parent(scopeName, t->attr.name)) {
+                st_insert(scopeName, t->attr.name, t->type, t);
+            } else {
+                // TODO : call 한것이 정의가 안되어있는 에러처리
+            }
             break;
         default:
             break;
