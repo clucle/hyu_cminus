@@ -103,6 +103,7 @@ typedef enum
 {
     Void,
     Integer,
+    IntegerArray,
     Boolean
 } ExpType;
 

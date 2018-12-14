@@ -72,7 +72,7 @@ static void insertNode(TreeNode *t)
                 // scope 에 같은 함수 존재 에러
                 // TODO : 에러처리
             }
-            st_insert(scopeName, t->attr.name, t->type, t);
+            st_insert(scopeName, t->attr.name, t->child[0]->type, t);
             scopeName = t->attr.name;
             sc_push(sc_create(scopeName));
             break;
@@ -89,10 +89,16 @@ static void insertNode(TreeNode *t)
     case ExpK:
         switch (t->kind.exp)
         {
-        case VarArrayK:
-        case SingleParamK:
-        case ArrayParamK:
         case VarK:
+        case SingleParamK:
+            if (st_lookup_excluding_parent(scopeName, t->attr.name)) {
+                // scope 에 같은 변수 존재 에러
+                // TODO : 에러처리
+            }
+            st_insert(scopeName, t->attr.name, t->child[0]->type, t);
+            break;
+        case VarArrayK:
+        case ArrayParamK:
             if (st_lookup_excluding_parent(scopeName, t->attr.name)) {
                 // scope 에 같은 변수 존재 에러
                 // TODO : 에러처리

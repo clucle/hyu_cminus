@@ -74,6 +74,7 @@ void sc_push(ScopeList sc) {
  */
 void st_insert(char *scope, char *name, ExpType type, TreeNode *t)
 {
+    fprintf(listing, "scope : %s, name : %s %d\n", scope, name, type);
     int lineno = t->lineno;
     int h = hash(name);
     ScopeList sc = sc_top();
@@ -98,6 +99,7 @@ void st_insert(char *scope, char *name, ExpType type, TreeNode *t)
         l->lines->next = NULL;
         l->next = sc->bucket[h];
         l->treeNode = t;
+        l->type = type;
         sc->bucket[h] = l;
     }
     else /* found in table, so just add line number */
@@ -160,6 +162,7 @@ BucketList st_lookup_excluding_parent(char *scope, char *name)
 }
 
 
+char *exp_to_string[] = {"Void", "Integer", "IntegerArray", "Boolean"};
 /* Procedure printSymTab prints a formatted 
  * listing of the symbol table contents 
  * to the listing file
@@ -167,8 +170,8 @@ BucketList st_lookup_excluding_parent(char *scope, char *name)
 void printSymTab(FILE *listing)
 {
     int i, j;
-    fprintf(listing, "  Name    Type  Location  Scope  Line Numbers\n");
-    fprintf(listing, "--------  ----  --------  -----  ------------\n");
+    fprintf(listing, "  Name        Type      Location   Scope    Line Numbers\n");
+    fprintf(listing, "--------  ------------  --------   -----    ------------\n");
     
     for (i = 0; i < nScopeList; i++) {
         ScopeList sc = scopeList[i];
@@ -182,9 +185,9 @@ void printSymTab(FILE *listing)
                 {
                     LineList t = l->lines;
                     fprintf(listing, "%-8s  ", l->name);
-                    fprintf(listing, "%-4d  ", l->type);
-                    fprintf(listing, "%-8d  ", l->memloc);
-                    fprintf(listing, "%-5s  ", sc->name);
+                    fprintf(listing, "%-12s     ", exp_to_string[l->type]);
+                    fprintf(listing, "%-6d  ", l->memloc);
+                    fprintf(listing, "%-6s  ", sc->name);
                     
                     while (t != NULL)
                     {

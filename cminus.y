@@ -63,6 +63,7 @@ type_specifier _id SEMI {
   $$ = newExpNode(VarArrayK);
   $$->child[0] = $1;
   $$->lineno = lineno;
+  $$->type = IntegerArray;
   $$->attr.arr.name = savedName;
   $$->attr.arr.length = savedNumber;
 };
@@ -72,11 +73,13 @@ type_specifier :
 INT {
   $$ = newTypeNode(TypeK);
   $$->attr.type = INT;
+  $$->type = Integer;
   $$->lineno = lineno;
 }
 | VOID {
   $$ = newTypeNode(TypeK);
   $$->attr.type = VOID;
+  $$->type = Void;
   $$->lineno = lineno;
 };
 
@@ -125,6 +128,7 @@ type_specifier _id {
 | type_specifier _id LBRACE RBRACE {
   $$ = newExpNode(ArrayParamK);
   $$->attr.name = savedName;
+  $$->type = IntegerArray;
   $$->child[0] = $1;
   $$->lineno = lineno;
 };
