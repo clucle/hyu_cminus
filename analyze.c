@@ -9,6 +9,11 @@
 #include "globals.h"
 #include "symtab.h"
 #include "analyze.h"
+#include "util.h"
+
+ScopeList globalScope;
+static char name[] = "global";
+static char *scopeName = name;
 
 /* counter for variable memory locations */
 static int location = 0;
@@ -58,15 +63,23 @@ static void insertNode(TreeNode *t)
     case StmtK:
         switch (t->kind.stmt)
         {
+        case FunctionK:
+            scopeName = sc_top()->name;
+            if (st_lookup_excluding_parent(scopeName, t->attr.name)) {
+                // scope 에 같은 함수 존재 에러
+                // TODO : 에러처리
+            }
+            st_insert(scopeName, t->attr.name, t->type, t);
+            sc_push(sc_create(t->attr.name));
+            scopeName = t->attr.name;
+            break;
+        case CompoundK:
+            fprintf(listing, "pop\n");
+            sc_pop();
+            break;
         case AssignK:
-        /*
-        case ReadK:
-          if (st_lookup(t->attr.name) == -1)
-            st_insert(t->attr.name,t->lineno,location++);
-          else
-            st_insert(t->attr.name,t->lineno,0);
-          break;
-        */
+
+            break;
         default:
             break;
         }
@@ -98,6 +111,45 @@ static void insertNode(TreeNode *t)
  */
 void buildSymtab(TreeNode *syntaxTree)
 {
+    globalScope = sc_create(scopeName);
+    sc_push(globalScope);
+
+    TreeNode *input_func;
+    input_func = newStmtNode(FunctionK);
+    input_func->type = Integer;
+    input_func->attr.name = malloc(strlen("input")+1);
+    input_func->lineno = 0;
+    strcpy(input_func->attr.name, "input");
+    input_func->child[0] = NULL;
+    input_func->child[1] = NULL;
+    st_insert(scopeName, input_func->attr.name, input_func->type, input_func);
+
+
+    TreeNode *output_func;
+    output_func = newStmtNode(FunctionK);
+    output_func->type = Void;
+    output_func->attr.name = malloc(strlen("input")+1);
+    output_func->lineno = 0;
+    strcpy(output_func->attr.name, "output");
+    output_func->child[0] = NULL;
+    output_func->child[1] = NULL;
+    st_insert(scopeName, output_func->attr.name, output_func->type, output_func);
+    
+    ScopeList tmpScope = sc_create("output");
+    sc_push(tmpScope);
+
+    TreeNode *arg;
+    arg = newExpNode(SingleParamK);
+    arg->type = Integer;
+    arg->attr.name = malloc(strlen("arg")+1);
+    arg->lineno = 0;
+    strcpy(arg->attr.name, "arg");
+    arg->child[0] = NULL;
+    arg->child[1] = NULL;
+    st_insert(sc_top()->name, arg->attr.name, arg->type, arg);
+
+    sc_pop();
+
     traverse(syntaxTree, insertNode, nullProc);
     if (TraceAnalyze)
     {

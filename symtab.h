@@ -34,6 +34,7 @@ typedef struct BucketListRec
     LineList lines;
     int memloc;
     struct BucketListRec *next;
+    TreeNode *treeNode;
 } * BucketList;
 
 /* scope List save */
@@ -42,6 +43,7 @@ typedef struct ScopeListRec
     char *name;
     BucketList bucket[SIZE];
     struct ScopeListRec *parent;
+    int loc;
 } * ScopeList;
 
 /* Procedure st_insert inserts line numbers and
@@ -49,7 +51,12 @@ typedef struct ScopeListRec
  * loc = memory location is inserted only the
  * first time, otherwise ignored
  */
-void st_insert(char *scope, char *name, ExpType type, int lineno, int loc);
+void st_insert(char *scope, char *name, ExpType type, TreeNode *t);
+
+ScopeList sc_create(char *name);
+ScopeList sc_top();
+void sc_pop();
+void sc_push();
 
 /* Function st_lookup returns the memory 
  * location of a variable or -1 if not found

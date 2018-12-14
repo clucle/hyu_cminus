@@ -17,9 +17,17 @@
 /* SIZE is the size of the hash table */
 #define SIZE 211
 
+/* SCOPE_SIZE is the size of the scope list */
+#define SCOPE_SIZE 512
+
 /* SHIFT is the power of two used as multiplier
    in hash function  */
 #define SHIFT 4
+
+static ScopeList scopeList[SCOPE_SIZE];
+static int nScopeList = 0;
+static ScopeList stackScope = NULL;
+
 
 /* the hash function */
 static int hash(char *key)
@@ -34,9 +42,31 @@ static int hash(char *key)
     return temp;
 }
 
+ScopeList sc_create(char *name) {
+    ScopeList s;
+    s = malloc(sizeof(struct ScopeListRec));
+    s->name = name;
+    for (int i = 0; i < SIZE; i++) {
+        s->bucket[i] = NULL;
+    }
+    s->loc = 0;
+    return s;
+}
+
 ScopeList sc_top() {
-    ScopeList tmp;
-    return tmp;
+    return stackScope;
+}
+
+void sc_pop() {
+    stackScope = stackScope->parent;
+    fprintf(listing, "cur scope : %s\n", stackScope->name);
+}
+
+void sc_push(ScopeList sc) {
+    sc->parent = sc_top();
+    stackScope = sc;
+    fprintf(listing, "cur scope : %s\n", sc->name);
+    scopeList[nScopeList++] = sc;
 }
 
 /* Procedure st_insert inserts line numbers and
@@ -44,10 +74,19 @@ ScopeList sc_top() {
  * loc = memory location is inserted only the
  * first time, otherwise ignored
  */
-void st_insert(char *scope, char *name, ExpType type, int lineno, int loc)
+void st_insert(char *scope, char *name, ExpType type, TreeNode *t)
 {
+    fprintf(listing, "insert : %s \n", name);
     int h = hash(name);
     ScopeList sc = sc_top();
+
+    while (sc) {
+        if (strcmp(sc->name, scope) == 0) {
+            break;
+        }
+        sc = sc->parent;
+    }
+
     BucketList l = sc->bucket[h];
     while ((l != NULL) && (strcmp(name, l->name) != 0))
         l = l->next;
@@ -56,10 +95,11 @@ void st_insert(char *scope, char *name, ExpType type, int lineno, int loc)
         l = (BucketList)malloc(sizeof(struct BucketListRec));
         l->name = name;
         l->lines = (LineList)malloc(sizeof(struct LineListRec));
-        l->lines->lineno = lineno;
-        l->memloc = loc;
+        l->lines->lineno = t->lineno;
+        l->memloc = sc->loc++;
         l->lines->next = NULL;
         l->next = sc->bucket[h];
+        l->treeNode = t;
         sc->bucket[h] = l;
     }
     else /* found in table, so just add line number */
@@ -88,34 +128,55 @@ BucketList st_lookup(char *scope, char *name)
     return NULL;
 }
 
+BucketList st_lookup_excluding_parent(char *scope, char *name)
+{
+    int h = hash(name);
+    ScopeList sc = sc_top();
+    if (strcmp(sc->name, scope) != 0) return NULL;
+    
+    BucketList l = sc->bucket[h];
+    while (l != NULL) {
+        if (strcmp(name, l->name) == 0) return l;
+        l = l->next;
+    }
+    return NULL;
+}
+
+
 /* Procedure printSymTab prints a formatted 
  * listing of the symbol table contents 
  * to the listing file
  */
 void printSymTab(FILE *listing)
 {
-    int i;
-    fprintf(listing, "Variable Name  Location   Line Numbers\n");
-    fprintf(listing, "-------------  --------   ------------\n");
+    int i, j;
+    fprintf(listing, "  Name    Type  Location  Scope  Line Numbers\n");
+    fprintf(listing, "--------  ----  --------  -----  ------------\n");
     
-    ScopeList sc = sc_top();
-    for (i = 0; i < SIZE; ++i)
-    {
-        if (sc->bucket[i] != NULL)
+    for (i = 0; i < nScopeList; i++) {
+        ScopeList sc = scopeList[i];
+
+        for (j = 0; j < SIZE; ++j)
         {
-            BucketList l = sc->bucket[i];
-            while (l != NULL)
+            if (sc->bucket[j] != NULL)
             {
-                LineList t = l->lines;
-                fprintf(listing, "%-14s ", l->name);
-                fprintf(listing, "%-8d  ", l->memloc);
-                while (t != NULL)
+                BucketList l = sc->bucket[j];
+                while (l != NULL)
                 {
-                    fprintf(listing, "%4d ", t->lineno);
-                    t = t->next;
+                    LineList t = l->lines;
+                    fprintf(listing, "%-8s  ", l->name);
+                    fprintf(listing, "%-4d  ", l->type);
+                    fprintf(listing, "%-8d  ", l->memloc);
+                    fprintf(listing, "%-5s  ", sc->name);
+                    
+                    while (t != NULL)
+                    {
+                        fprintf(listing, "%4d ", t->lineno);
+                        t = t->next;
+                    }
+                    fprintf(listing, "\n");
+                    l = l->next;
                 }
-                fprintf(listing, "\n");
-                l = l->next;
             }
         }
     }
