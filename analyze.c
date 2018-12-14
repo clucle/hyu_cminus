@@ -75,13 +75,14 @@ static void insertNode(TreeNode *t)
         switch (t->kind.exp)
         {
         case IdK:
-            if (st_lookup(t->attr.name) == -1)
-                /* not yet in table, so treat as new definition */
-                st_insert(t->attr.name, t->lineno, location++);
+            /*
+            if (st_lookup(NULL, t->attr.name) == -1)
+                // not yet in table, so treat as new definition 
+                st_insert(NULL, t->attr.name, t->type, t->lineno, location++);
             else
-                /* already in table, so ignore location, 
-             add line number of use only */
-                st_insert(t->attr.name, t->lineno, 0);
+                //already in table, so ignore location, add line number of use only 
+                st_insert(NULL, t->attr.name, t->type, t->lineno, 0);
+            */
             break;
         default:
             break;

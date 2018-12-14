@@ -76,11 +76,12 @@ static void genStmt(TreeNode *tree)
       /* generate code for rhs */
       cGen(tree->child[0]);
       /* now store value */
+      /*
       loc = st_lookup(tree->attr.name);
       emitRM("ST", ac, loc, gp, "assign: store value");
       if (TraceCode)
          emitComment("<- assign");
-      break; /* assign_k */
+      break; *//* assign_k */
    /*
       case ReadK:
          emitRO("IN",ac,0,0,"read integer value");
@@ -112,12 +113,13 @@ static void genExp(TreeNode *tree)
       break;
     */
    case IdK:
+      /*
       if (TraceCode)
          emitComment("-> Id");
       loc = st_lookup(tree->attr.name);
       emitRM("LD", ac, loc, gp, "load id value");
       if (TraceCode)
-         emitComment("<- Id");
+         emitComment("<- Id");*/
       break; /* IdK */
 
    case OpK:
