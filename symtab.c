@@ -114,14 +114,33 @@ void st_insert(char *scope, char *name, ExpType type, TreeNode *t)
 /* Function st_lookup returns the memory 
  * location of a variable or -1 if not found
  */
+
+ScopeList sc_lookup(char *name)
+{
+    int h = hash(name);
+    ScopeList sc = sc_top();
+    while(sc) {
+        BucketList l = sc->bucket[h];
+        while (l != NULL) {
+            if (strcmp(name, l->name) == 0) return sc;
+            l = l->next;
+        }
+        sc = sc->parent;
+    }
+    return NULL;
+}
+
 BucketList st_lookup(char *scope, char *name)
 {
     int h = hash(name);
     ScopeList sc = sc_top();
-    BucketList l = sc->bucket[h];
-    while (l != NULL) {
-        if (strcmp(name, l->name) == 0) return l;
-        l = l->next;
+    while(sc) {
+        BucketList l = sc->bucket[h];
+        while (l != NULL) {
+            if (strcmp(name, l->name) == 0) return l;
+            l = l->next;
+        }
+        sc = sc->parent;
     }
     return NULL;
 }

@@ -103,8 +103,8 @@ static void insertNode(TreeNode *t)
         case ArrayIdK:
         case IdK:
         case CallK:
-            if (st_lookup_excluding_parent(scopeName, t->attr.name)) {
-                st_insert(scopeName, t->attr.name, t->type, t);
+            if (sc_lookup(t->attr.name) != NULL) {
+                st_insert(sc_lookup(t->attr.name)->name, t->attr.name, t->type, t);
             } else {
                 // TODO : call 한것이 정의가 안되어있는 에러처리
             }

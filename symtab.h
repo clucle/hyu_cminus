@@ -57,6 +57,7 @@ ScopeList sc_create(char *name);
 ScopeList sc_top();
 void sc_pop();
 void sc_push();
+ScopeList sc_lookup(char *name);
 
 /* Function st_lookup returns the memory 
  * location of a variable or -1 if not found
