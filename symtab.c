@@ -59,13 +59,11 @@ ScopeList sc_top() {
 
 void sc_pop() {
     stackScope = stackScope->parent;
-    fprintf(listing, "cur scope : %s\n", stackScope->name);
 }
 
 void sc_push(ScopeList sc) {
     sc->parent = sc_top();
     stackScope = sc;
-    fprintf(listing, "cur scope : %s\n", sc->name);
     scopeList[nScopeList++] = sc;
 }
 
@@ -76,7 +74,6 @@ void sc_push(ScopeList sc) {
  */
 void st_insert(char *scope, char *name, ExpType type, TreeNode *t)
 {
-    fprintf(listing, "insert : %s \n", name);
     int h = hash(name);
     ScopeList sc = sc_top();
 
@@ -133,7 +130,7 @@ BucketList st_lookup_excluding_parent(char *scope, char *name)
     int h = hash(name);
     ScopeList sc = sc_top();
     if (strcmp(sc->name, scope) != 0) return NULL;
-    
+
     BucketList l = sc->bucket[h];
     while (l != NULL) {
         if (strcmp(name, l->name) == 0) return l;

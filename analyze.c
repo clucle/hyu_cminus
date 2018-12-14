@@ -40,17 +40,20 @@ static void traverse(TreeNode *t,
     }
 }
 
-/* nullProc is a do-nothing procedure to 
- * generate preorder-only or postorder-only
- * traversals from traverse
- */
-static void nullProc(TreeNode *t)
+
+static void forPop(TreeNode *t)
 {
-    if (t == NULL)
-        return;
-    else
-        return;
+    if (t->nodekind == StmtK && t->kind.stmt == CompoundK) {
+        sc_pop();
+        scopeName = sc_top()->name;
+    }
 }
+
+static void forPush(TreeNode *t)
+{
+    // TODO
+}
+
 
 /* Procedure insertNode inserts 
  * identifiers stored in t into 
@@ -70,12 +73,10 @@ static void insertNode(TreeNode *t)
                 // TODO : 에러처리
             }
             st_insert(scopeName, t->attr.name, t->type, t);
-            sc_push(sc_create(t->attr.name));
             scopeName = t->attr.name;
             break;
         case CompoundK:
-            fprintf(listing, "pop\n");
-            sc_pop();
+            sc_push(sc_create(scopeName));
             break;
         case AssignK:
 
@@ -87,6 +88,14 @@ static void insertNode(TreeNode *t)
     case ExpK:
         switch (t->kind.exp)
         {
+        case VarK:
+            scopeName = sc_top()->name;
+            if (st_lookup_excluding_parent(scopeName, t->attr.name)) {
+                // scope 에 같은 변수 존재 에러
+                // TODO : 에러처리
+            }
+            st_insert(scopeName, t->attr.name, t->type, t);
+            break;
         case IdK:
             /*
             if (st_lookup(NULL, t->attr.name) == -1)
@@ -150,7 +159,7 @@ void buildSymtab(TreeNode *syntaxTree)
 
     sc_pop();
 
-    traverse(syntaxTree, insertNode, nullProc);
+    traverse(syntaxTree, insertNode, forPop);
     if (TraceAnalyze)
     {
         fprintf(listing, "\nSymbol table:\n\n");
@@ -202,16 +211,10 @@ static void checkNode(TreeNode *t)
             if (t->child[0]->type != Integer)
                 typeError(t->child[0], "assignment of non-integer value");
             break;
-        /*
-        case WriteK:
-          if (t->child[0]->type != Integer)
-            typeError(t->child[0],"write of non-integer value");
-          break;
-        case RepeatK:
-          if (t->child[1]->type == Integer)
-            typeError(t->child[1],"repeat test is not Boolean");
-          break;
-        */
+        case CompoundK:
+            sc_pop();
+            scopeName = sc_top()->name;
+            break;
         default:
             break;
         }
@@ -226,5 +229,7 @@ static void checkNode(TreeNode *t)
  */
 void typeCheck(TreeNode *syntaxTree)
 {
-    traverse(syntaxTree, nullProc, checkNode);
+    sc_push(globalScope);
+    traverse(syntaxTree, forPush, checkNode);
+    sc_pop();
 }
