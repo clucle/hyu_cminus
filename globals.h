@@ -133,6 +133,7 @@ typedef struct treeNode
         ArrayType arr;
     } attr;
     ExpType type; /* for type checking of exps */
+    struct ScopeListRec *scope;
 } TreeNode;
 
 /**************************************************/

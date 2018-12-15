@@ -72,9 +72,9 @@ void sc_push(ScopeList sc) {
  * loc = memory location is inserted only the
  * first time, otherwise ignored
  */
-void st_insert(char *scope, char *name, ExpType type, TreeNode *t)
+void st_insert(char *scope, char *name, ExpType type, TreeNode *tree)
 {
-    int lineno = t->lineno;
+    int lineno = tree->lineno;
     int h = hash(name);
     ScopeList sc = sc_top();
 
@@ -97,7 +97,7 @@ void st_insert(char *scope, char *name, ExpType type, TreeNode *t)
         l->memloc = sc->loc++;
         l->lines->next = NULL;
         l->next = sc->bucket[h];
-        l->treeNode = t;
+        l->treeNode = tree;
         l->type = type;
         sc->bucket[h] = l;
     }

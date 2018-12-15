@@ -51,7 +51,10 @@ static void forPop(TreeNode *t)
 
 static void forPush(TreeNode *t)
 {
-    // TODO
+    if (t->nodekind == StmtK) {
+        if (t->kind.stmt == CompoundK) sc_push(t->scope);
+        else if (t->kind.stmt == FunctionK) scopeName = t->attr.name;
+    }
 }
 
 char *nestedScope(char *foo) {
@@ -95,6 +98,7 @@ static void insertNode(TreeNode *t)
                 char *newScopeName = nestedScope(sc_top()->name);
                 sc_push(sc_create(newScopeName));
             }
+            t->scope = sc_top();
             break;
         default:
             break;
@@ -182,13 +186,16 @@ void buildSymtab(TreeNode *syntaxTree)
     st_insert(sc_top()->name, arg->attr.name, arg->type, arg);
 
     sc_pop();
+    
 
     traverse(syntaxTree, insertNode, forPop);
+    sc_pop();
     if (TraceAnalyze)
     {
         fprintf(listing, "\nSymbol table:\n\n");
         printSymTab(listing);
     }
+    
 }
 
 static void typeError(TreeNode *t, char *message)
@@ -219,6 +226,19 @@ static void checkNode(TreeNode *t)
         // case ConstK:
         case IdK:
             t->type = Integer;
+            break;
+        case ArrayIdK:
+            {
+                BucketList b = st_lookup(scopeName, t->attr.name);
+                if(b == NULL){
+                    break;
+                }
+                if(t->child[0]->type != Integer)
+                    typeError(t->child[0], "ArrayIdK not Integer");
+                else{
+                    t->type = Integer;
+                }
+            }
             break;
         default:
             break;
