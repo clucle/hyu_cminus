@@ -207,13 +207,6 @@ static void typeError(TreeNode *t, char *message)
 /* Procedure checkNode performs
  * type checking at a single tree node
  */
-
-/*
-        case AssignK:
-            if (t->child[0]->type != Integer)
-                typeError(t->child[0], "assignment of non-integer value");
-            break;
-            */
 static void checkNode(TreeNode *t)
 {
     switch (t->nodekind)
