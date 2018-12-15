@@ -54,7 +54,14 @@ static void forPush(TreeNode *t)
     // TODO
 }
 
+char *nestedScope(char *foo) {
+    char *ptr = malloc(strlen(foo) + 2 + 1);
+    strcpy(ptr, foo);
+    strcat(ptr, "_n");
+    return ptr;
+}
 
+int compoundFlag = 0;
 /* Procedure insertNode inserts 
  * identifiers stored in t into 
  * the symbol table 
@@ -67,20 +74,27 @@ static void insertNode(TreeNode *t)
         switch (t->kind.stmt)
         {
         case FunctionK:
+            if (compoundFlag == 1) {
+                // TODO : 함수안에서 함수 정의 못함
+                fprintf(listing, "error\n");
+            }
             scopeName = sc_top()->name;
             if (st_lookup_excluding_parent(scopeName, t->attr.name)) {
                 // scope 에 같은 함수 존재 에러
                 // TODO : 에러처리
+                fprintf(listing, "error\n");
             }
             st_insert(scopeName, t->attr.name, t->child[0]->type, t);
             scopeName = t->attr.name;
             sc_push(sc_create(scopeName));
+            compoundFlag = 1;
             break;
         case CompoundK:
-            fprintf(listing, "{} block 열릴때\n");
-            break;
-        case AssignK:
-
+            if (compoundFlag == 1) compoundFlag = 0;
+            else {
+                char *newScopeName = nestedScope(sc_top()->name);
+                sc_push(sc_create(newScopeName));
+            }
             break;
         default:
             break;
@@ -91,19 +105,19 @@ static void insertNode(TreeNode *t)
         {
         case VarK:
         case SingleParamK:
-            if (st_lookup_excluding_parent(scopeName, t->attr.name)) {
+            if (st_lookup_excluding_parent(sc_top()->name, t->attr.name)) {
                 // scope 에 같은 변수 존재 에러
                 // TODO : 에러처리
             }
-            st_insert(scopeName, t->attr.name, t->child[0]->type, t);
+            st_insert(sc_top()->name, t->attr.name, t->child[0]->type, t);
             break;
         case VarArrayK:
         case ArrayParamK:
-            if (st_lookup_excluding_parent(scopeName, t->attr.name)) {
+            if (st_lookup_excluding_parent(sc_top()->name, t->attr.name)) {
                 // scope 에 같은 변수 존재 에러
                 // TODO : 에러처리
             }
-            st_insert(scopeName, t->attr.name, t->type, t);
+            st_insert(sc_top()->name, t->attr.name, t->type, t);
             break;
 
         case ArrayIdK:

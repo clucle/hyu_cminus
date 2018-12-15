@@ -74,7 +74,6 @@ void sc_push(ScopeList sc) {
  */
 void st_insert(char *scope, char *name, ExpType type, TreeNode *t)
 {
-    fprintf(listing, "scope : %s, name : %s %d\n", scope, name, type);
     int lineno = t->lineno;
     int h = hash(name);
     ScopeList sc = sc_top();
