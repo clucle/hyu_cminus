@@ -113,7 +113,8 @@ static void insertNode(TreeNode *t)
                 symbolError(t, "variable already declared in scope");
                 break;
             }
-            st_insert(sc_top()->name, t->attr.name, t->child[0]->type, t);
+            t->type = t->child[0]->type;
+            st_insert(sc_top()->name, t->attr.name, t->type, t);
             break;
         case VarArrayK:
         case ArrayParamK:
@@ -123,7 +124,6 @@ static void insertNode(TreeNode *t)
             }
             st_insert(sc_top()->name, t->attr.name, t->type, t);
             break;
-
         case ArrayIdK:
         case IdK:
         case CallK:
@@ -275,8 +275,8 @@ static void checkNode(TreeNode *t)
                     break;
                 }
 
-                TreeNode *functionDeclaredArgs = b->treeNode->child[0];
-                TreeNode *curArgs = t->child[0];
+                TreeNode *functionDeclaredArgs = b->treeNode->child[1];
+                TreeNode *curArgs =t->child[0];
 
                 while (functionDeclaredArgs != NULL) {
                     if (curArgs == NULL) {
@@ -288,6 +288,7 @@ static void checkNode(TreeNode *t)
                         break;
                     }
                     else if (curArgs->type != functionDeclaredArgs->type) {
+                        
                         typeError(curArgs, "should be same type args");
                         break;
                     } else {

@@ -13,9 +13,7 @@
 #include <string.h>
 #include "globals.h"
 #include "symtab.h"
-
-/* SIZE is the size of the hash table */
-#define SIZE 211
+#include "util.h"
 
 /* SCOPE_SIZE is the size of the scope list */
 #define SCOPE_SIZE 512
