@@ -61,6 +61,11 @@ char *nestedScope(char *foo) {
     return ptr;
 }
 
+static void symbolError(TreeNode *t, char *message) {
+    fprintf(listing, "Symbol error at line %d: %s\n", t->lineno, message);
+    Error = TRUE;
+}
+
 int compoundFlag = 0;
 /* Procedure insertNode inserts 
  * identifiers stored in t into 
@@ -74,15 +79,10 @@ static void insertNode(TreeNode *t)
         switch (t->kind.stmt)
         {
         case FunctionK:
-            if (compoundFlag == 1) {
-                // TODO : 함수안에서 함수 정의 못함
-                fprintf(listing, "error\n");
-            }
             scopeName = sc_top()->name;
             if (st_lookup_excluding_parent(scopeName, t->attr.name)) {
-                // scope 에 같은 함수 존재 에러
-                // TODO : 에러처리
-                fprintf(listing, "error\n");
+                symbolError(t, "function already declared in scope");
+                break;
             }
             st_insert(scopeName, t->attr.name, t->child[0]->type, t);
             scopeName = t->attr.name;
@@ -106,16 +106,16 @@ static void insertNode(TreeNode *t)
         case VarK:
         case SingleParamK:
             if (st_lookup_excluding_parent(sc_top()->name, t->attr.name)) {
-                // scope 에 같은 변수 존재 에러
-                // TODO : 에러처리
+                symbolError(t, "variable already declared in scope");
+                break;
             }
             st_insert(sc_top()->name, t->attr.name, t->child[0]->type, t);
             break;
         case VarArrayK:
         case ArrayParamK:
             if (st_lookup_excluding_parent(sc_top()->name, t->attr.name)) {
-                // scope 에 같은 변수 존재 에러
-                // TODO : 에러처리
+                symbolError(t, "variable already declared in scope");
+                break;
             }
             st_insert(sc_top()->name, t->attr.name, t->type, t);
             break;
@@ -126,7 +126,8 @@ static void insertNode(TreeNode *t)
             if (sc_lookup(t->attr.name) != NULL) {
                 st_insert(sc_lookup(t->attr.name)->name, t->attr.name, t->type, t);
             } else {
-                // TODO : call 한것이 정의가 안되어있는 에러처리
+                symbolError(t, "variable or function undeclared");
+                break;
             }
             break;
         default:
