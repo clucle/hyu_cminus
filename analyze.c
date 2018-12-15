@@ -207,6 +207,13 @@ static void typeError(TreeNode *t, char *message)
 /* Procedure checkNode performs
  * type checking at a single tree node
  */
+
+/*
+        case AssignK:
+            if (t->child[0]->type != Integer)
+                typeError(t->child[0], "assignment of non-integer value");
+            break;
+            */
 static void checkNode(TreeNode *t)
 {
     switch (t->nodekind)
@@ -214,23 +221,99 @@ static void checkNode(TreeNode *t)
     case ExpK:
         switch (t->kind.exp)
         {
-        case OpK:
-            if ((t->child[0]->type != Integer) ||
-                (t->child[1]->type != Integer))
-                typeError(t, "Op applied to non-integer");
-            if ((t->attr.op == EQ) || (t->attr.op == LT))
-                t->type = Boolean;
-            else
-                t->type = Integer;
+        case OpK: 
+            {
+                ExpType left = t->child[0]->type;
+                ExpType right = t->child[1]->type;
+                TokenType op = t->attr.op;
+
+                if (left == Void) {
+                    typeError(t->child[0], "can not be void in op");
+                    break;
+                }
+                if (right == Void) {
+                    typeError(t->child[0], "can not be void in op");
+                    break;
+                }
+                // EQ NE LT LE GT GE
+                if (op == ASSIGN) {
+                    if (left != right) {
+                        typeError(t->child[0], "Assign should be same two var's type");
+                        break;
+                    } else {
+                        t->type = t->child[0]->type;
+                    }
+                } else {
+                    
+                    if (left != right) {
+                        typeError(t->child[0], "Op should be same two var's type");
+                        break;
+                    }
+                    // + - * /
+                    if (op == PLUS || op == MINUS || op == TIMES || op == OVER) {
+                        if (left == IntegerArray) {
+                            typeError(t->child[0], "+ - * / should be integer");
+                            break;
+                        }
+                    }
+                    // == != >= > <= <
+                    if (op == EQ || op == NE || op == LT || op == LE ||
+                        op == GT || op == GE) {
+                        if (left == IntegerArray) {
+                            typeError(t->child[0], "== != >= > <= < should be integer");
+                            break;
+                        }
+                    }
+                    t->type = Integer;
+                }
+            }
             break;
-        // case ConstK:
-        case IdK:
+        case CallK:
+            {
+                BucketList b = st_lookup(scopeName, t->attr.name);
+                if (b == NULL){
+                    break;
+                }
+
+                TreeNode *functionDeclaredArgs = b->treeNode->child[0];
+                TreeNode *curArgs = t->child[0];
+
+                while (functionDeclaredArgs != NULL) {
+                    if (curArgs == NULL) {
+                        typeError(curArgs, "function argument param cnt not correct");
+                        break;
+                    }
+                    else if (curArgs->type == Void) {
+                        typeError(curArgs, "can not come void");
+                        break;
+                    }
+                    else if (curArgs->type == functionDeclaredArgs->type) {
+                        typeError(curArgs, "should be same type args");
+                        break;
+                    } else {
+                        curArgs = curArgs->sibling;
+                        functionDeclaredArgs = functionDeclaredArgs->sibling;
+                    }
+                }
+                t->type = b->type;
+            }
+            break;
+        case ConstK:
             t->type = Integer;
+            break;
+        case IdK:
+            {
+                BucketList b = st_lookup(scopeName, t->attr.name);
+                if (b == NULL){
+                    break;
+                }
+                t->type = b->type;
+            }
             break;
         case ArrayIdK:
             {
                 BucketList b = st_lookup(scopeName, t->attr.name);
-                if(b == NULL){
+                if (b == NULL){
                     break;
                 }
                 if(t->child[0]->type != Integer)
@@ -248,16 +331,29 @@ static void checkNode(TreeNode *t)
         switch (t->kind.stmt)
         {
         case IfK:
-            if (t->child[0]->type == Integer)
-                typeError(t->child[0], "if test is not Boolean");
-            break;
-        case AssignK:
-            if (t->child[0]->type != Integer)
-                typeError(t->child[0], "assignment of non-integer value");
+        case WhileK:
+            if (t->child[0]->type == Void)
+                typeError(t->child[0], "can not void in if or while state");
             break;
         case CompoundK:
             sc_pop();
             scopeName = sc_top()->name;
+            break;
+        case ReturnK:
+            {
+                ExpType returnType = st_lookup(scopeName, scopeName)->type;
+                
+                if (returnType == Void) {
+                    if (t->child[0] != NULL || t->child[0]->type != Void) {
+                        typeError(t, "void function return not void");
+                    }
+                }
+                else if (returnType == Integer) {
+                    if (t->child[0] == NULL || t->child[0]->type != Integer) {
+                        typeError(t, "integer function return not integer");
+                    }
+                }
+            }
             break;
         default:
             break;
