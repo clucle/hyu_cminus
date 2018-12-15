@@ -287,7 +287,7 @@ static void checkNode(TreeNode *t)
                         typeError(curArgs, "can not come void");
                         break;
                     }
-                    else if (curArgs->type == functionDeclaredArgs->type) {
+                    else if (curArgs->type != functionDeclaredArgs->type) {
                         typeError(curArgs, "should be same type args");
                         break;
                     } else {
