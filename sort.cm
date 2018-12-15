@@ -34,9 +34,11 @@ void sort(int a[], int low, int high)
         i = i + 1;
     }
 }
-void main(void)
+int main(void)
 {
+    void k;
     int i;
+    int aa[3];
     i = 0;
     while (i < 10)
     {
@@ -44,10 +46,16 @@ void main(void)
         i = i + 1;
     }
     sort(x, 0, 10);
+    sort(x[2], 0, 10);
+    sort(x, 0);
+    sort(x, 0, 10, 25);
     i = 0;
     while (i < 10)
     {
         output(x[i]);
         i = i + 1;
     }
+    
+    aa = 5;
+    return ;
 }

@@ -108,6 +108,17 @@ static void insertNode(TreeNode *t)
         switch (t->kind.exp)
         {
         case VarK:
+            if (st_lookup_excluding_parent(sc_top()->name, t->attr.name)) {
+                symbolError(t, "variable already declared in scope");
+                break;
+            }
+            t->type = t->child[0]->type;
+            if (t->type == Void) {
+                symbolError(t, "variable type should not Void");
+            } else {
+                st_insert(sc_top()->name, t->attr.name, t->type, t);
+            }
+            break;
         case SingleParamK:
             if (st_lookup_excluding_parent(sc_top()->name, t->attr.name)) {
                 symbolError(t, "variable already declared in scope");
@@ -184,6 +195,7 @@ void buildSymtab(TreeNode *syntaxTree)
     arg->child[0] = NULL;
     arg->child[1] = NULL;
     st_insert(sc_top()->name, arg->attr.name, arg->type, arg);
+    output_func->child[1] = arg;
 
     sc_pop();
     
@@ -214,6 +226,17 @@ static void checkNode(TreeNode *t)
     case ExpK:
         switch (t->kind.exp)
         {
+        case AssignK:{
+                ExpType left = t->child[0]->type;
+                ExpType right = t->child[1]->type;
+                if (left != right) {
+                    typeError(t->child[0], "Assign should be same two var's type");
+                    break;
+                } else {
+                    t->type = t->child[0]->type;
+                }
+            }
+            break;
         case OpK: 
             {
                 ExpType left = t->child[0]->type;
@@ -230,12 +253,7 @@ static void checkNode(TreeNode *t)
                 }
                 // EQ NE LT LE GT GE
                 if (op == ASSIGN) {
-                    if (left != right) {
-                        typeError(t->child[0], "Assign should be same two var's type");
-                        break;
-                    } else {
-                        t->type = t->child[0]->type;
-                    }
+                    
                 } else {
                     
                     if (left != right) {
@@ -267,27 +285,36 @@ static void checkNode(TreeNode *t)
                 if (b == NULL){
                     break;
                 }
-
                 TreeNode *functionDeclaredArgs = b->treeNode->child[1];
                 TreeNode *curArgs =t->child[0];
-
+                int errorCheck = 0;
                 while (functionDeclaredArgs != NULL) {
                     if (curArgs == NULL) {
-                        typeError(curArgs, "function argument param cnt not correct");
+                        typeError(functionDeclaredArgs, "too few args!");
+                        errorCheck = 1;
                         break;
                     }
                     else if (curArgs->type == Void) {
                         typeError(curArgs, "can not come void");
+                        errorCheck = 1;
                         break;
                     }
                     else if (curArgs->type != functionDeclaredArgs->type) {
                         
                         typeError(curArgs, "should be same type args");
+                        errorCheck = 1;
                         break;
                     } else {
                         curArgs = curArgs->sibling;
                         functionDeclaredArgs = functionDeclaredArgs->sibling;
                     }
+                }
+                if (errorCheck) {
+                    break;
+                }
+                if (curArgs != NULL) {
+                    typeError(curArgs, "too many args!");
+                    break;
                 }
                 t->type = b->type;
             }
